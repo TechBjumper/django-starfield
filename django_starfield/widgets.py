@@ -19,12 +19,13 @@ class Stars(Widget):
         self.content = content if content else getattr(settings, 'STARFIELD_CONTENT', STARFIELD_CONTENT)
         self.colour = colour if colour else getattr(settings, 'STARFIELD_COLOUR', STARFIELD_COLOUR)
         self.css_file = css_file if css_file else getattr(settings, 'STARFIELD_CSS', STARFIELD_CSS)
-        self.unique_id = unique_id if unique_id else ''.join([random.choice(string.ascii_lowercase) for i in range(8)])
+        self.unique_id = unique_id
 
     def get_context(self, name, value, attrs):
         context = super(Stars, self).get_context(name, value, attrs)
         context['stars'] = range(self.stars, 0, -1)
-        context['unique_id'] = self.unique_id
+        # A fresh id per render keeps several copies of the same form on one page apart
+        context['unique_id'] = self.unique_id or ''.join([random.choice(string.ascii_lowercase) for i in range(8)])
         context['css_file'] = self.css_file
         if not self.content == STARFIELD_CONTENT:
             context['content'] = self.content

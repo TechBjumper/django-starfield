@@ -46,6 +46,7 @@ ENV/
 # Editors
 *~
 DEADJOE
+.idea/
 
 # Database
 db.sqlite3
