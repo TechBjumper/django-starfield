@@ -104,3 +104,28 @@ class WidgetTests(SimpleTestCase):
         self.assertIn('id="rating-fixed-0"', html)
         self.assertIn('for="rating-fixed-0"', html)
         self.assertIn('#django-starfield-fixed label', html)
+
+    def test_not_clearable_by_default(self):
+        inputs = Inputs(Stars().render('rating', 3)).inputs
+        self.assertNotIn('', [i['value'] for i in inputs])
+
+    def test_clearable_renders_empty_choice(self):
+        for value, checked in [(None, True), (3, False)]:
+            with self.subTest(value=value):
+                inputs = Inputs(Stars(clearable=True, unique_id='fixed').render('rating', value)).inputs
+                clear = inputs[-1]
+                self.assertEqual(len(inputs), 6)
+                self.assertEqual((clear['id'], clear['value']), ('rating-fixed-clear', ''))
+                self.assertEqual('checked' in clear, checked)
+
+    def test_clearable_from_settings(self):
+        with override_settings(STARFIELD_CLEARABLE=True):
+            self.assertEqual(len(Inputs(Stars().render('rating', None)).inputs), 6)
+            self.assertEqual(len(Inputs(Stars(clearable=False).render('rating', None)).inputs), 5)
+
+    def test_clearable_submission_clears_value(self):
+        model_admin = admin.ModelAdmin(Product, admin.AdminSite())
+        form_class = model_admin.get_form(RequestFactory().get('/'), widgets={'rating': Stars(clearable=True)})
+        form = form_class({'rating': ''}, instance=Product(rating=2))
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertIsNone(form.save(commit=False).rating)

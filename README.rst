@@ -67,6 +67,10 @@ creating the widget (by passing an argument to Stars):
      - ``django_starfield.css``
      - ``STARFIELD_CSS``
      - ``css_file``
+   * - Clear option
+     - ``False``
+     - ``STARFIELD_CLEARABLE``
+     - ``clearable``
 
 The template can be configured with ``STARFIELD_TEMPLATE``. Custom templates
 also receive ``unique_id``, which the default template uses in its HTML ids so
@@ -102,31 +106,25 @@ JavaScript that targets the old ids, or pass a fixed ``unique_id``.
 Django admin
 ------------
 
-Attach a ModelForm to your ModelAdmin (replace Product with your own model):
+Pass the widget through ``get_form`` (replace Product with your own model).
+The rating range comes from the model field validators:
 
 .. code:: python
 
-    from django import forms
     from django.contrib import admin
     from django_starfield import Stars
     from .models import Product
 
-    class ProductAdminForm(forms.ModelForm):
-        rating = forms.IntegerField(
-            min_value=1, max_value=5, required=False, widget=Stars,
-        )
-
-        class Meta:
-            model = Product
-            fields = "__all__"
-
     @admin.register(Product)
     class ProductAdmin(admin.ModelAdmin):
-        form = ProductAdminForm
+        def get_form(self, request, obj=None, change=False, **kwargs):
+            kwargs["widgets"] = {"rating": Stars(clearable=True)}
+            return super().get_form(request, obj, change, **kwargs)
 
-The model field must allow empty values if ``required=False`` is used.
-The widget controls presentation; the form field validates the rating range.
-The radio widget does not provide a button to clear a selection.
+Use ``clearable=True`` when the model field allows empty values. It adds a
+clear button next to the stars, shown only while a rating is selected, which
+submits an empty value. The stylesheet keeps the stars on one line inside the
+admin aligned fieldsets.
 
 Development
 -----------

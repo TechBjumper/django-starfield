@@ -1,10 +1,17 @@
 {% load static %}
+<div class="django-starfield-wrapper">
 <div class="django-starfield" id="django-starfield-{{ unique_id }}"{% if content %} style="--starfield-content: {{ content }};"{% endif %}>
  {% for i in stars %}
   <input type="radio" name="{{ widget.name }}" id="{{ widget.name }}-{{ unique_id }}-{{ forloop.counter0 }}"
          value="{{ i }}" {% if widget.value == i|stringformat:'i' %}checked="checked"{% endif %} />
   <label for="{{ widget.name }}-{{ unique_id }}-{{ forloop.counter0 }}"><span>{{ i }}</span></label>
  {% endfor %}
+</div>
+{% if clearable %}
+<input type="radio" class="django-starfield-clear" name="{{ widget.name }}" id="{{ widget.name }}-{{ unique_id }}-clear"
+       value="" {% if widget.value is None or widget.value == "" %}checked="checked"{% endif %} />
+<label class="django-starfield-clear-label" for="{{ widget.name }}-{{ unique_id }}-clear" title="Clear"><span>Clear</span></label>
+{% endif %}
 </div>
 <link rel="stylesheet" href="{% static css_file %}" />
 {% if colour %}

@@ -65,3 +65,46 @@
 {
     filter: grayscale(0);
 }
+
+/* Keep the layout when a host stylesheet styles every label,
+ * such as the Django admin aligned fieldsets.
+ */
+div.django-starfield label,
+div.django-starfield-wrapper label.django-starfield-clear-label
+{
+    display: inline-block;
+    float: none;
+    width: auto;
+    min-width: 0;
+    padding: 0;
+}
+
+.django-starfield-wrapper
+{
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.django-starfield-wrapper input.django-starfield-clear
+{
+    display: none;
+}
+
+.django-starfield-clear-label::before
+{
+    content: '\2715';
+    font-size: 14px;
+    line-height: 18px;
+    cursor: pointer;
+}
+
+.django-starfield-clear-label span
+{
+    display: none;
+}
+
+.django-starfield-clear:checked + .django-starfield-clear-label
+{
+    visibility: hidden;
+}
